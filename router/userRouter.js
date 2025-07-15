@@ -5,11 +5,18 @@ const userController = require('../controller/userController/userController');
 const { verifyAccessToken } = require('../service/token');
 const upload = require('../middleware/upload'); // ✅ MATCHES THE EXPORT
 
-user.post('/register',  upload.fields([
-    { name: 'panCard', maxCount: 1 },
-    { name: 'aadhaarCard', maxCount: 1 },
-    { name: 'gstDocument', maxCount: 1 }
-  ]), userController.addUser);
+user.post('/register',  );
+user.post('/login',  );
+user.get('/get-user-list',  );
+user.post('/update-user-details/:id',  );
+user.post('/soft-delete-user',  );
+user.get('/user-activity-logs',  );
+user.get('/user-recent-activity',  );
+user.post('/user-change-password',  );
+user.post('/user-transection-pin-setup',  );
+user.post('/user-mpin-setup',  );
+user.get('/user-activity-logs',  );
+user.get('/get-user-dashboard-data',  );
 
 
 module.exports = user;
