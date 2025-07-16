@@ -81,7 +81,7 @@ const addUser = async (req, res, next) => {
     }
     const result = await User.create(userData);
     await sendCredentialEmail(email, { email, password: raw });
-    res.status(201).json({ data: result, message: 'User Created Successfully!', status: 200 });
+    res.status(201).json({ data: result, message: 'User Created Successfully!', status: 201 });
   } catch (err) {
     next(err);
   }
