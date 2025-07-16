@@ -19,6 +19,11 @@ const Transaction = sequelize.define('Transaction', {
     unique: true,
     validate: { notEmpty: true }
   },
+    gatwayId: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: { notEmpty: true }
+  },
   orderId: {
     type: DataTypes.STRING,
     allowNull: false,

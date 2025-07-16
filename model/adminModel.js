@@ -29,6 +29,11 @@ const Admin = sequelize.define('Admin', {
     allowNull: false,
     defaultValue: true
   },
+    role: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1
+  },
   ip: {
     type: DataTypes.STRING,
     allowNull: false,

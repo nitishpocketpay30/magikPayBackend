@@ -5,6 +5,8 @@ require('../model/userModel');
 require('../model/accessModule');
 require('../model/Transaction');
 require('../model/adminModel');
+require('../model/providerModel');
+require('../model/virtualTransactionModel');
 // import additional models here as needed
 
 async function initSequelize() {

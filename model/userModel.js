@@ -17,6 +17,10 @@ const User = sequelize.define('User', {
     allowNull: false,
     validate: { isEmail: true }
   },
+  password:{
+type: DataTypes.STRING,
+allowNull: false,
+  },
   panCardUpload: {
     type: DataTypes.STRING, // store file path or URL
     allowNull: true
@@ -27,9 +31,9 @@ const User = sequelize.define('User', {
   },
   gstNumber: {
     type: DataTypes.STRING(15),
-    allowNull: false,
-    unique: true,
-    validate: { len: [15, 15] }
+   allowNull: true,
+  // unique: true,
+  validate: { len: [0, 15] }
   },
   panNumber: {
     type: DataTypes.STRING(10),
@@ -48,26 +52,26 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true
   },
-otp: {
-  type: DataTypes.INTEGER,
-  allowNull: true,
-  validate: { min: 0, max: 999999 }
-},
-minAmount: {
-  type: DataTypes.DECIMAL(10, 2),  // correct for money
-  allowNull: true,
-  validate: { min: 0 }
-},
-maxAmount: {
-  type: DataTypes.DECIMAL(10, 2),
-  allowNull: true,
-  validate: { min: 0 }
-},
-userIp1: {
-  type: DataTypes.STRING,
-  allowNull: true,
-  validate: { isIP: true }
-},
+  otp: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    validate: { min: 0, max: 999999 }
+  },
+  minAmount: {
+    type: DataTypes.DECIMAL(10, 2),  // correct for money
+    allowNull: true,
+    validate: { min: 0 }
+  },
+  maxAmount: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: true,
+    validate: { min: 0 }
+  },
+  userIp1: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: { isIP: true }
+  },
   user_ip2: {
     type: DataTypes.STRING,
     allowNull: true
@@ -79,6 +83,16 @@ userIp1: {
   access_token: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  topup: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+
+  },
+  status:{
+    type:DataTypes.BOOLEAN,
+    defaultValue:false
   },
   contactPersonMobile: {
     type: DataTypes.STRING(20),

@@ -8,9 +8,11 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-
 const mongodbConnection = require('./config/mongodb');
-// const userRouter = require('./router/userRouter');
+// uncomment for seeding 
+// require('./config/setupAdmin');
+
+const userRouter = require('./router/userRouter');
 // const adminRouter = require('./router/adminRouter');
 // const masterRouter = require('./router/masterRouter');
 // const transactionRouter = require('./router/transactionRouter');
@@ -35,7 +37,6 @@ app.use(
 
 // Security: CORS
 const allowedOrigins = [
-  'https://admin.joyntapp.com',
   'http://localhost:3000', // for local development
 ];
 app.use(
@@ -71,7 +72,7 @@ app.get('/', (req, res) => {
 });
 
 // Routers (uncomment as needed)
-// app.use('/user', userRouter);
+app.use('/user', userRouter);
 // app.use('/admin', adminRouter);
 // app.use('/master', masterRouter);
 // app.use('/transactions', transactionRouter);
