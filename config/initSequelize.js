@@ -7,6 +7,8 @@ require('../model/Transaction');
 require('../model/adminModel');
 require('../model/providerModel');
 require('../model/virtualTransactionModel');
+require('../model/resetMpinModel');
+require('../model/transactionPinModel');
 // import additional models here as needed
 
 async function initSequelize() {

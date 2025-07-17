@@ -24,5 +24,33 @@ function sendOTPEmail(to, otp) {
 
   return transporter.sendMail(mailOptions);
 }
+function sendOTPMPIN(to, otp) {
+  const mailOptions = {
+    from: process.env.SMTP_FROM,
+    to,
+    subject: 'Your OTP Code',
+    html: `
+      <p>Your <strong>One-Time Password</strong> is:</p>
+      <h2>${otp}</h2>
+      <p>This code is valid for <strong>10 minutes</strong>.</p>
+    `
+  };
 
-module.exports = sendOTPEmail;
+  return transporter.sendMail(mailOptions);
+}
+function sendOTPTXNPIN(to, otp) {
+  const mailOptions = {
+    from: process.env.SMTP_FROM,
+    to,
+    subject: 'Your OTP Code',
+    html: `
+      <p>Your <strong>One-Time Password For Transaction Pin Update</strong> is:</p>
+      <h2>${otp}</h2>
+      <p>This code is valid for <strong>10 minutes</strong>.</p>
+    `
+  };
+
+  return transporter.sendMail(mailOptions);
+}
+
+module.exports = {sendOTPEmail,sendOTPMPIN,sendOTPTXNPIN};

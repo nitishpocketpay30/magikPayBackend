@@ -9,6 +9,8 @@ const generateAccessToken = (entity, user) => {
     id: user.id,
     email: user.email,
     name: user.firstName || user.companyName,
+    role:entity==="admin" ? "admin":entity==="admin" ?"staff": "user",
+    permission:[]
   };
   const secret = entity === 'admin'
     ? process.env.JWT_SECRET_ADMIN

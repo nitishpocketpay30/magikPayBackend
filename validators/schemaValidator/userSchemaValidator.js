@@ -65,5 +65,23 @@ const loginSchema = Joi.object({
       'string.max': 'Password cannot exceed 128 characters'
     })
 });
+const verifyOtpSchema = Joi.object({
+  otp: Joi.string()
+    .pattern(/^\d{6}$/, { name: '6-digit code' })
+    .required()
+    .messages({
+      'string.pattern.name': 'OTP must be exactly 6 digits',
+      'string.empty': 'OTP is required'
+    })
+});
+const verifyMpinSchema = Joi.object({
+  mpin: Joi.string()
+    .pattern(/^\d{6}$/, { name: '6-digit code' })
+    .required()
+    .messages({
+      'string.pattern.name': 'MPIN must be exactly 6 digits',
+      'string.empty': 'MPIN is required'
+    })
+});
 
-module.exports = { userSchema,loginSchema };
+module.exports = { userSchema,loginSchema,verifyOtpSchema,verifyMpinSchema };

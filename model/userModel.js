@@ -57,17 +57,17 @@ allowNull: false,
     allowNull: true,
     validate: { min: 0, max: 999999 }
   },
-  minAmount: {
+  min_amount: {
     type: DataTypes.DECIMAL(10, 2),  // correct for money
     allowNull: true,
     validate: { min: 0 }
   },
-  maxAmount: {
+  max_amount: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: true,
     validate: { min: 0 }
   },
-  userIp1: {
+  user_ip1: {
     type: DataTypes.STRING,
     allowNull: true,
     validate: { isIP: true }
@@ -81,7 +81,7 @@ allowNull: false,
     allowNull: true
   },
   access_token: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true
   },
   topup: {
@@ -99,9 +99,49 @@ allowNull: false,
     allowNull: true,
     validate: { is: /^[0-9+\-() ]*$/ }
   },
+transactionPin: {
+  type: DataTypes.STRING,
+  allowNull: true,
+  field: 'transaction_pin'
+},
+pinFailedAttempts: {
+  type: DataTypes.INTEGER,
+  defaultValue: 0,
+  field: 'pin_failed_attempts'
+},
+pinLockedUntil: {
+  type: DataTypes.DATE,
+  allowNull: true,
+  field: 'pin_locked_until'
+},
+mpinFailedAttempts: {
+  type: DataTypes.INTEGER,
+  defaultValue: 0,
+  field: 'mpin_failed_attempts'
+},
+mpinLockedUntil: {
+  type: DataTypes.DATE,
+  allowNull: true,
+  field: 'mpin_locked_until'
+},
+mpin:{
+   type: DataTypes.STRING,
+  allowNull: true,
+  field: 'mpin'
+},
+mpinOtpVerified:{
+   type: DataTypes.BOOLEAN,
+   defaultValue:false,
+  field: 'mpinOtpVerified'
+},
+txnPinOtpVerified:{
+   type: DataTypes.BOOLEAN,
+   defaultValue:false,
+  field: 'txnPinOtpVerified'
+}
 }, {
   tableName: 'users',
-  underscored: true,
+  underscored: false,
   timestamps: true,
 });
 
