@@ -9,7 +9,7 @@ const generateAccessToken = (entity, user) => {
     id: user.id,
     email: user.email,
     name: user.firstName || user.companyName,
-    role:entity==="admin" ? "admin":entity==="admin" ?"staff": "user",
+    role:user?.role===1 ? "admin" :user?.role===2 ? "staff" : "user",
     permission:[]
   };
   const secret = entity === 'admin'

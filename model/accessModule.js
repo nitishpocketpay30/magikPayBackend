@@ -11,6 +11,14 @@ const AccessModule = sequelize.define('AccessModule', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+   submoduleName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  sub_module_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
   create: {
     type: DataTypes.BOOLEAN,
     allowNull: false,

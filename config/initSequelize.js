@@ -9,6 +9,7 @@ require('../model/providerModel');
 require('../model/virtualTransactionModel');
 require('../model/resetMpinModel');
 require('../model/transactionPinModel');
+require('../model/InvestorModel');
 // import additional models here as needed
 
 async function initSequelize() {
@@ -16,6 +17,8 @@ async function initSequelize() {
   console.log('✅ MySQL connected.');
 
   await sequelize.sync({ alter: true });
+//  await sequelize.sync({ force: true });
+
   console.log('📦 All models synced with database (tables created/altered)');  // cite turn0search0
 
   const qi = sequelize.getQueryInterface();

@@ -23,6 +23,7 @@ async function seedSuperAdmin() {
     email,
     passwordHash,
     status: true,
+    role:1, // 1 for super admin 2 for staff
     ip: process.env.SUPER_ADMIN_IP || '127.0.0.1'
   });
 

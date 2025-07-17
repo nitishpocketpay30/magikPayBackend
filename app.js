@@ -13,7 +13,7 @@ const mongodbConnection = require('./config/mongodb');
 // require('./config/setupAdmin');
 
 const userRouter = require('./router/userRouter');
-// const adminRouter = require('./router/adminRouter');
+const adminRouter = require('./router/adminRouter');
 // const masterRouter = require('./router/masterRouter');
 // const transactionRouter = require('./router/transactionRouter');
 // const audioVideoRouter = require('./router/audioVideoLogsRouter');
@@ -73,7 +73,7 @@ app.get('/', (req, res) => {
 
 // Routers (uncomment as needed)
 app.use('/user', userRouter);
-// app.use('/admin', adminRouter);
+app.use('/admin', adminRouter);
 // app.use('/master', masterRouter);
 // app.use('/transactions', transactionRouter);
 // app.use('/audiovideo', audioVideoRouter);
