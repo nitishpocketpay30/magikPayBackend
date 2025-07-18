@@ -15,6 +15,17 @@ require('../model/InvestorModel');
 async function initSequelize() {
   await sequelize.authenticate();
   console.log('✅ MySQL connected.');
+  const models = {
+  Admin: sequelize.models.Admin,
+  AccessModule: sequelize.models.AccessModule,
+  User: sequelize.models.User,
+};
+
+Object.values(models).forEach(m => {
+  if (typeof m.associate === 'function') {
+    m.associate(models);
+  }
+});
 
   await sequelize.sync({ alter: true });
 //  await sequelize.sync({ force: true });

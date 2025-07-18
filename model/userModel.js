@@ -1,6 +1,7 @@
 // models/User.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize'); // your Sequelize instance
+const AccessModule = require('./accessModule');
 
 const User = sequelize.define('User', {
   companyName: {
@@ -18,9 +19,9 @@ const User = sequelize.define('User', {
     unique: true,
     validate: { isEmail: true }
   },
-  password:{
-type: DataTypes.STRING,
-allowNull: false,
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   panCardUpload: {
     type: DataTypes.STRING, // store file path or URL
@@ -32,9 +33,9 @@ allowNull: false,
   },
   gstNumber: {
     type: DataTypes.STRING(15),
-   allowNull: true,
-  // unique: true,
-  validate: { len: [0, 15] }
+    allowNull: true,
+    // unique: true,
+    validate: { len: [0, 15] }
   },
   panNumber: {
     type: DataTypes.STRING(10),
@@ -85,65 +86,76 @@ allowNull: false,
     type: DataTypes.TEXT,
     allowNull: true
   },
+  payment_provider:{
+      type: DataTypes.INTEGER,
+    allowNull: true,
+  },
   topup: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0
 
   },
-  status:{
-    type:DataTypes.BOOLEAN,
-    defaultValue:false
+  status: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   },
   contactPersonMobile: {
     type: DataTypes.STRING(20),
     allowNull: true,
     validate: { is: /^[0-9+\-() ]*$/ }
   },
-transactionPin: {
-  type: DataTypes.STRING,
-  allowNull: true,
-  field: 'transaction_pin'
-},
-pinFailedAttempts: {
-  type: DataTypes.INTEGER,
-  defaultValue: 0,
-  field: 'pin_failed_attempts'
-},
-pinLockedUntil: {
-  type: DataTypes.DATE,
-  allowNull: true,
-  field: 'pin_locked_until'
-},
-mpinFailedAttempts: {
-  type: DataTypes.INTEGER,
-  defaultValue: 0,
-  field: 'mpin_failed_attempts'
-},
-mpinLockedUntil: {
-  type: DataTypes.DATE,
-  allowNull: true,
-  field: 'mpin_locked_until'
-},
-mpin:{
-   type: DataTypes.STRING,
-  allowNull: true,
-  field: 'mpin'
-},
-mpinOtpVerified:{
-   type: DataTypes.BOOLEAN,
-   defaultValue:false,
-  field: 'mpinOtpVerified'
-},
-txnPinOtpVerified:{
-   type: DataTypes.BOOLEAN,
-   defaultValue:false,
-  field: 'txnPinOtpVerified'
-}
+  transactionPin: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'transaction_pin'
+  },
+  pinFailedAttempts: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    field: 'pin_failed_attempts'
+  },
+  pinLockedUntil: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'pin_locked_until'
+  },
+  mpinFailedAttempts: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    field: 'mpin_failed_attempts'
+  },
+  mpinLockedUntil: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'mpin_locked_until'
+  },
+  mpin: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: 'mpin'
+  },
+  mpinOtpVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    field: 'mpinOtpVerified'
+  },
+  txnPinOtpVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    field: 'txnPinOtpVerified'
+  }
 }, {
   tableName: 'users',
   underscored: false,
   timestamps: true,
 });
+User.associate = models => {
+  models.User.hasMany(models.AccessModule, {
+    foreignKey: 'userId',
+    as: 'permissions',
+    scope: { userType: 2 }
+  });
+};
 
 module.exports = User;

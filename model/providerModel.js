@@ -4,12 +4,17 @@ const sequelize = require('../config/sequelize'); // Ensure this loads your Sequ
 const Provider = sequelize.define('Provider', {
   provider: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    unique:true
   },
   status: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1
+  },
+    access_key: {
+    type: DataTypes.STRING,
+    allowNull: false
   },
   created_by: {
     type: DataTypes.INTEGER,

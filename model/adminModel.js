@@ -1,6 +1,7 @@
 // models/Admin.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');  // ensure you're importing the same Sequelize instance
+const AccessModule = require('./accessModule');
 
 const Admin = sequelize.define('Admin', {
   firstName: {
@@ -43,5 +44,13 @@ const Admin = sequelize.define('Admin', {
   tableName: 'admins',
   timestamps: true
 });
+Admin.associate = models => {
+  models.Admin.hasMany(models.AccessModule, {
+    foreignKey: 'userId',
+    as: 'permissions',
+    scope: { userType:1 }
+  });
+};
+
 
 module.exports = Admin;

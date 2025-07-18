@@ -19,6 +19,7 @@ user.post('/update-user-details/:id', verifyAdmin, upload.fields([
     { name: 'aadhaarCard', maxCount: 1 },
     { name: 'gstDocument', maxCount: 1 },
 ]), userController.updateUserByAdmin);
+user.get('/getUserDetails',verifyUser,userController.getUserDetails)
 // user.post('/soft-delete-user',  );
 // user.get('/user-activity-logs',  );
 // user.get('/user-recent-activity',  );

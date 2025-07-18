@@ -1,21 +1,27 @@
 const express = require('express');
 const transaction = express.Router();
 
-const userController = require('../controller/userController/userController');
+const VTXNController = require('../controller/userController/virtualTransaction');
 const { verifyAccessToken } = require('../service/token');
 const upload = require('../middleware/upload'); // ✅ MATCHES THE EXPORT
+const { verifyUser, verifyAdmin } = require('../middleware/auth.middleware');
 
-transaction.post('/create-transaction',  );
-transaction.get('/get-all-transaction',  );
-transaction.get('/get-transaction-details/:id',  );
+// virtual transaction start
+transaction.post('/request-for-topup',verifyUser,VTXNController.requestTopUpByUser)
+transaction.post('/approved-for-topup',verifyAdmin,VTXNController.approvedRequestByAdmin)
+// virtual transaction end
+
+// transaction.post('/create-transaction',  );
+// transaction.get('/get-all-transaction',  );
+// transaction.get('/get-transaction-details/:id',  );
 // transaction.post('/soft-delete-transaction',  ); // optional
-transaction.get('/get-all-transaction-logs',  );
-transaction.get('/user-specific-transaction-logs',  );
-transaction.post('/user-change-password',  );
-transaction.get('/user-activity-logs',  );
-transaction.post('/create-fund-load-or-topup',  );
-transaction.get('/get-balance-logs',  );
+// transaction.get('/get-all-transaction-logs',  );
+// transaction.get('/user-specific-transaction-logs',  );
+// transaction.post('/user-change-password',  );
+// transaction.get('/user-activity-logs',  );
+// transaction.post('/create-fund-load-or-topup',  );
+// transaction.get('/get-balance-logs',  );
 
 
-module.exports = user;
+module.exports = transaction;
 // ✅ This code defines the user router for handling user-related routes in the application.

@@ -14,6 +14,7 @@ const generatePassword = require('../../service/passwordGenerator');
 // 👥 Models
 const Admin = require('../../model/adminModel');
 const AccessModule = require('../../model/accessModule');
+const User = require('../../model/userModel');
 
 const addStaffByAdmin = async (req, res, next) => {
     try {
@@ -117,46 +118,144 @@ const updateStaffByAdmin = async (req, res, next) => {
     next(err);
   }
 };
-const getAllStaff=async (req,res,next)=>{
-    try{
+const getAllStaff = async (req, res, next) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res
+        .status(403)
+        .json({ status: 403, message: 'Forbidden' });
+    }
+
+    const staffList = await Admin.findAll({
+      attributes: { exclude: ['passwordHash'] },
+      include: [
+        {
+          model: AccessModule,
+          as: 'permissions',
+          // Fetch permissions for specific module/submodule — pass via query
+          where:
+            {
+                userId: { [Op.col]: 'Admin.id' },
+                userType: 1,
+                 status:true
+              }
+            ,
+        }
+      ]
+    });
+
+    res.status(200).json({
+      message: 'Staff list fetched successfully',
+      status: 200,
+      data: staffList
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+const getAdminDetails = async (req, res, next) => {
+  try {
+
+    const { id } = req.user;
     if (req.user.role !== 'admin') {
       return res.status(403).json({ status: 403, message: 'Forbidden' });
     }
-      const staffList = await Admin.findAll({
-        attributes: { exclude: ['passwordHash'] }
-      });
-res.status(200).json({
-    message:"staff list fetch successfully",
-    status:200,
-    data:staffList
-})
+
+    const staff = await Admin.findOne({
+      where: { id: parseInt(id)},
+      attributes: { exclude: ['passwordHash'] },
+      include: [{
+        model: AccessModule,
+        as: 'permissions', // must match your association alias
+        required: false,
+        where: {        // optional filtering; remove to get all
+          userType: 1 // or 'admin', consistent with stored enum
+        }
+      }]
+    });
+
+    if (!staff) {
+      return res.status(404).json({ status: 404, message: 'Staff not found' });
     }
-    catch(err){
-        next(err)
+
+    res.status(200).json({
+      message: 'Staff fetched successfully',
+      status: 200,
+      data: staff
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+const getAllUsers = async (req, res, next) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res
+        .status(403)
+        .json({ status: 403, message: 'Forbidden' });
     }
-}
-const getAllStaffById=async (req,res,next)=>{
-    try{
-        const {id}=req.params;
+
+    const staffList = await User.findAll({
+      attributes: { exclude: ['passwordHash'] },
+      include: [
+        {
+          model: AccessModule,
+          as: 'permissions',
+          // Fetch permissions for specific module/submodule — pass via query
+          where:
+            {
+                userId: { [Op.col]: 'User.id' },
+                userType: 2,
+                status:true
+              }
+            ,
+        }
+      ]
+    });
+
+    res.status(200).json({
+      message: 'User list fetched successfully',
+      status: 200,
+      data: staffList
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getAllStaffById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
     if (req.user.role !== 'admin') {
       return res.status(403).json({ status: 403, message: 'Forbidden' });
     }
-      const staffList = await Admin.findOne({
-        where:{
-            id:id
-        },
-        attributes: { exclude: ['passwordHash'] }
-      });
-res.status(200).json({
-    message:"staff list fetch successfully",
-    status:200,
-    data:staffList
-})
+
+    const staff = await Admin.findOne({
+      where: { id: Number(id) },
+      attributes: { exclude: ['passwordHash'] },
+      include: [{
+        model: AccessModule,
+        as: 'permissions', // must match your association alias
+        required: false,
+        where: {        // optional filtering; remove to get all
+          userType: 1 // or 'admin', consistent with stored enum
+        }
+      }]
+    });
+
+    if (!staff) {
+      return res.status(404).json({ status: 404, message: 'Staff not found' });
     }
-    catch(err){
-        next(err)
-    }
-}
+
+    res.status(200).json({
+      message: 'Staff fetched successfully',
+      status: 200,
+      data: staff
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 const createAccessModule = async (req, res, next) => {
   try {
     if (req.user.role !== 'admin') {
@@ -165,23 +264,23 @@ const createAccessModule = async (req, res, next) => {
 
     const {
       moduleName,
-      moduleId,
+      module_id,
       submoduleName,
-      subModuleId,
+      sub_module_id,
       permissions = {},
       userType,
       userId
     } = req.body;
 
     // Input validation
-    if (![moduleName, moduleId, submoduleName, subModuleId, userType, userId].every(v => v !== undefined)) {
+    if (![moduleName, module_id, submoduleName, sub_module_id, userType, userId].every(v => v !== undefined)) {
       return res.status(400).json({ status: 400, message: 'Missing required fields' });
     }
 
     const existing = await AccessModule.findOne({
       where: {
-        module_id: moduleId,
-        sub_module_id: subModuleId,
+        module_id: module_id,
+        sub_module_id: sub_module_id,
         userType,
         userId
       }
@@ -193,9 +292,9 @@ const createAccessModule = async (req, res, next) => {
 
     const entry = await AccessModule.create({
       moduleName,
-      module_id: moduleId,
+      module_id: module_id,
       submoduleName,
-      sub_module_id: subModuleId,
+      sub_module_id: sub_module_id,
       create: !!permissions.create,
       read: !!permissions.read,
       update: !!permissions.update,
@@ -249,11 +348,85 @@ const updateAccessModule = async (req, res, next) => {
   }
 };
 
+const removeAllUserStaffPermission = async (req, res, next) => {
+  try {
+    const { userId, userType, module_id, sub_module_id } = req.body;
+
+    if (!userId || !userType || !module_id) {
+      return res.status(400).json({
+        error: '`userId`, `userType`, and `module_id` are required.'
+      });
+    }
+
+    const where = { userId, userType, module_id };
+    if (sub_module_id !== undefined) {
+      where.sub_module_id = sub_module_id;
+    }
+
+    const [affectedRows] = await AccessModule.update(
+      {status:false },
+      { where }
+    );
+
+    if (affectedRows === 0) {
+      return res.status(404).json({
+        message: 'No matching permission records found to reset.',
+        status:404
+      });
+    }
+
+    res.status(200).json({
+      message: `Cleared all permissions for userId=${userId}, userType=${userType} at module ${module_id}` +
+               (sub_module_id ? `, submodule ${sub_module_id}` : '') + '.',
+      status:200
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+const removePermissionForSpecificModule = async (req, res, next) => {
+  try {
+    const { userId, userType, module_id, sub_module_id } = req.body;
+    if (!userId || !userType || !module_id) {
+      return res.status(400).json({
+        status: 400,
+        error: '`userId`, `userType`, and `module_id` are required.'
+      });
+    }
+
+    const where = { userId, userType, module_id };
+    if (sub_module_id !== undefined) where.sub_module_id = sub_module_id;
+
+    const [affectedRows] = await AccessModule.update(
+      { status: false },    // or set create/read/update/delete = false individually
+      { where }
+    );
+
+    if (affectedRows === 0) {
+      return res.status(404).json({
+        status: 404,
+        message: 'No matching permission records found.'
+      });
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: `Permissions revoked for userId=${userId}, userType=${userType}, module=${module_id}`
+        + (sub_module_id !== undefined ? `, submodule=${sub_module_id}` : '')
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
     addStaffByAdmin,
     updateStaffByAdmin,
     getAllStaff,
     getAllStaffById,
     createAccessModule,
-    updateAccessModule
+    updateAccessModule,
+    removeAllUserStaffPermission,
+    removePermissionForSpecificModule,
+    getAllUsers,
+    getAdminDetails
 }

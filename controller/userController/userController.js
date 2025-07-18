@@ -23,6 +23,7 @@ const User = require('../../model/userModel');
 const RefreshToken = require('../../model/RefreshToken');
 const ResetMpin = require('../../model/resetMpinModel');
 const TransactionPin = require('../../model/transactionPinModel');
+const AccessModule = require('../../model/accessModule');
 
 
 const s3Client = new S3Client({
@@ -93,7 +94,7 @@ const addUser = async (req, res, next) => {
     }
     const result = await User.create(userData);
     await sendCredentialEmail(email, { email, password: raw });
-    res.status(201).json({ data: result, message: 'User Created Successfully!', status: 201 });
+    res.status(201).json({ data:{}, message: 'User Created Successfully!', status: 201 });
   } catch (err) {
     next(err);
   }
@@ -104,7 +105,8 @@ const loginUserAdmin = async (req, res, next) => {
 
     const admin = JSON.parse(JSON.stringify(await Admin.findOne({ where: { email, status: true } })));
     if (admin && await bcrypt.compare(password, admin.passwordHash)) {
-      const accessToken = generateAccessToken('admin', admin);
+      const accessToken = await generateAccessToken('admin', admin);
+      console.log("hello",accessToken)
       const refreshToken = generateRefreshToken(admin);
 
       await RefreshToken.create({
@@ -486,6 +488,40 @@ const setTransactionPin = async (req, res, next) => {
     next(err);
   }
 };
+const getUserDetails = async (req, res, next) => {
+  try {
+
+    const { id } = req.user;
+    if (req.user.role !== 'user') {
+      return res.status(403).json({ status: 403, message: 'Forbidden' });
+    }
+
+    const staff = await User.findOne({
+      where: { id: parseInt(id)},
+      attributes: { exclude: ['password','access_token'] },
+      include: [{
+        model: AccessModule,
+        as: 'permissions', // must match your association alias
+        required: false,
+        where: {        // optional filtering; remove to get all
+          userType: 2 // or 'admin', consistent with stored enum
+        }
+      }]
+    });
+
+    if (!staff) {
+      return res.status(404).json({ status: 404, message: 'user not found' });
+    }
+
+    res.status(200).json({
+      message: 'user fetched successfully',
+      status: 200,
+      data: staff
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   addUser,
   loginUserAdmin,
@@ -498,5 +534,6 @@ module.exports = {
   setMPIN,
   resetTransactionRequest,
   verifyTransactionPinOTP,
-  setTransactionPin
+  setTransactionPin,
+  getUserDetails
 }

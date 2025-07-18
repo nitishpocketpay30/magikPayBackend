@@ -14,6 +14,8 @@ const mongodbConnection = require('./config/mongodb');
 
 const userRouter = require('./router/userRouter');
 const adminRouter = require('./router/adminRouter');
+const txnRouter=require('./router/transactionRouter')
+const providerRouter=require('./router/providerRouter')
 // const masterRouter = require('./router/masterRouter');
 // const transactionRouter = require('./router/transactionRouter');
 // const audioVideoRouter = require('./router/audioVideoLogsRouter');
@@ -74,8 +76,8 @@ app.get('/', (req, res) => {
 // Routers (uncomment as needed)
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);
-// app.use('/master', masterRouter);
-// app.use('/transactions', transactionRouter);
+app.use('/transaction', txnRouter);
+app.use('/provider', providerRouter);
 // app.use('/audiovideo', audioVideoRouter);
 
 // Catch-all 404 handler

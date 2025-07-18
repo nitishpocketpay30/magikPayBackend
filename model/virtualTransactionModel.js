@@ -7,13 +7,13 @@ const VirtulaTransaction = sequelize.define('VirtulaTransaction', {
     allowNull: false
   },
     virtual_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false
   },
   status: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 1
+    defaultValue:0
   },
   amount: {
     type: DataTypes.INTEGER,
@@ -21,7 +21,7 @@ const VirtulaTransaction = sequelize.define('VirtulaTransaction', {
   },
     approved_by: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    defaultValue:0
   },
 }, {
   tableName: 'virtulaTransaction',
