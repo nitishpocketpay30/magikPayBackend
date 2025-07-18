@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const createError = require('http-errors');
 const CryptoJS = require("crypto-js");
+const crypto = require('crypto');
+
 const AccessModule = require('../model/accessModule');
 dotenv.config();
 async function fetchUserPermissions(user) {
@@ -61,4 +63,7 @@ return originalText;
 function generateVirtualId(length = 8) {
   return `VIR${Math.random().toString(36).substr(2, length).toUpperCase()}`;
 }
-module.exports = { generateAccessToken, generateRefreshToken,encryptDataFromText,decryptTextFromData,generateVirtualId };
+function generateApiTxnId() {
+  return crypto.randomUUID(); // e.g. "9b9c8a30-5d0f-4f11-9c2a-4d3e92b3f7f2"
+}
+module.exports = { generateAccessToken, generateRefreshToken,encryptDataFromText,decryptTextFromData,generateVirtualId,generateApiTxnId };

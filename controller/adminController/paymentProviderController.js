@@ -19,37 +19,37 @@ const Provider = require('../../model/providerModel');
 
 
 const addProvider = async (req, res, next) => {
-    try {
-        if (req.user.role !== 'admin') {
-            throw createError(403, 'Unauthorized user');
-        }
-        const { provider, access_key } = req.body;
-        if (!provider) throw createError(400, 'provider is required');
-        if (!access_key) throw createError(400, 'access key is required');
-        const exists = await Provider.findOne({ where: { provider } });
-        if (exists) {
-            return res.status(409).json({
-                status: 409,
-                message: 'Provider already exists'
-            });
-        }
-        const obj = {
-            provider,
-            access_key: encryptDataFromText(access_key),
-            created_by: req.user.id,
-            status: 1
-        }
-        const newProvider = await Provider.create(obj);
-        if (!newProvider) throw createError(400, "provider creation failed")
-        res.status(201).json({
-            status: 201,
-            message: 'Provider created successfully',
-            data: newProvider
-        });
+  try {
+    if (req.user.role !== 'admin') {
+      throw createError(403, 'Unauthorized user');
     }
-    catch (err) {
-        next(err)
+    const { provider, access_key } = req.body;
+    if (!provider) throw createError(400, 'provider is required');
+    if (!access_key) throw createError(400, 'access key is required');
+    const exists = await Provider.findOne({ where: { provider } });
+    if (exists) {
+      return res.status(409).json({
+        status: 409,
+        message: 'Provider already exists'
+      });
     }
+    const obj = {
+      provider,
+      access_key: encryptDataFromText(access_key),
+      created_by: req.user.id,
+      status: 1
+    }
+    const newProvider = await Provider.create(obj);
+    if (!newProvider) throw createError(400, "provider creation failed")
+    res.status(201).json({
+      status: 201,
+      message: 'Provider created successfully',
+      data: newProvider
+    });
+  }
+  catch (err) {
+    next(err)
+  }
 }
 const updateProvider = async (req, res, next) => {
   try {
@@ -84,8 +84,8 @@ const getProviders = async (req, res, next) => {
     const providers = await Provider.findAll({
       attributes: ['id', 'provider', 'status', 'created_by', 'createdAt'],
       order: [['createdAt', 'DESC']],
-      where:{
-        status:1
+      where: {
+        status: 1
       }
     });
 
@@ -129,34 +129,47 @@ const assignProviderToUser = async (req, res, next) => {
       Provider.findOne({ where: { id: providerId, status: 1 } }),
       User.findOne({ where: { id: userId, status: true } })
     ]);
+
     if (!provider) throw createError(404, 'Provider not found or inactive');
     if (!user) throw createError(404, 'User not found or inactive');
 
-    const [assignment, created] = await ProviderUser.findOrCreate({
-      where: { providerId, userId }
-    });
-    if (!created) {
+    // Check if user already has a provider assigned
+    const existing = await User.findByPk(userId);
+    const wasAlreadyAssigned = existing.payment_provider === providerId;
+
+    // Update the user
+    const updates = { payment_provider: providerId };
+    if (JSON.parse(JSON.stringify(provider)).access_key) {
+      updates.access_token = JSON.parse(JSON.stringify(provider)).access_key;
+    }
+    await existing.update(updates);
+
+    if (wasAlreadyAssigned) {
       return res.status(200).json({
         status: 200,
-        message: 'Provider already assigned to this user',
-        data: assignment
+        message: 'Provider was already assigned to this user',
+        data: [1]
       });
     }
 
     res.status(201).json({
       status: 201,
       message: 'Provider assigned to user successfully',
-      data: assignment
+      data: [1]
     });
+
   } catch (err) {
-    if (err.isJoi) return res.status(400).json({ status: 400, error: err.message });
+    if (err.isJoi) {
+      return res.status(400).json({ status: 400, error: err.message });
+    }
     next(err);
   }
 };
+
 module.exports = {
-    addProvider,
-    updateProvider,
-    getProviders,
-    deleteProvider,
-    assignProviderToUser
+  addProvider,
+  updateProvider,
+  getProviders,
+  deleteProvider,
+  assignProviderToUser
 }
