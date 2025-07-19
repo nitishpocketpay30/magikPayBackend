@@ -26,7 +26,6 @@ async function fetchUserPermissions(user) {
 }
 
 const generateAccessToken = async(entity, user) => {
-  const permissions = await fetchUserPermissions(user) || [];
 
   const payload = {
     id: user.id,
@@ -38,7 +37,6 @@ const generateAccessToken = async(entity, user) => {
   const secret = entity === 'admin'
     ? process.env.JWT_SECRET_ADMIN
     : process.env.JWT_SECRET_USER;
-  console.log("HELLO",payload,user,entity)
 
   const expiresIn = '1d';
   return jwt.sign(payload, secret, { expiresIn });

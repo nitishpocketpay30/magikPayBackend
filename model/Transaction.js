@@ -37,6 +37,10 @@ const Transaction = sequelize.define('Transaction', {
     type: DataTypes.JSON,
     allowNull: false
   },
+    apiresponseDetails: {
+    type: DataTypes.JSON,
+    allowNull: true
+  },
   utrNo: {
     type: DataTypes.STRING,
     allowNull: true

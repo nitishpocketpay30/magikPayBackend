@@ -132,7 +132,7 @@ const loginUserAdmin = async (req, res, next) => {
     // —— Then try User
     const user = await User.findOne({ where: { email, status: true } });
     if (user && await bcrypt.compare(password, user.password)) {
-      const accessToken = generateAccessToken('user', user);
+      const accessToken = await generateAccessToken('user', user);
       // await user.update({ access_token: accessToken });
 
       return res.status(201).json({

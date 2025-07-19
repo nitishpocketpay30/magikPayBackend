@@ -1,16 +1,21 @@
 
 const fetch = require('node-fetch');
 const crypto = require('crypto');
+require('dotenv').config();
 
+function aesEncrypt(jsonPayload, keyStr, ivStr) {
+  const key = Buffer.from(keyStr, 'utf8');
+  const iv = Buffer.from(ivStr, 'utf8');
 
-function aesEncrypt(jsonPayload, aesKeyHex) {
-  const aesKey = Buffer.from(aesKeyHex, 'hex');
-  const iv = aesKey.slice(0, 16);
-  const cipher = crypto.createCipheriv('aes-256-cbc', aesKey, iv);
+  if (key.length !== 32) throw new Error('AES key must be 32 bytes');
+  if (iv.length !== 16) throw new Error('AES IV must be 16 bytes');
+
+  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
   const encrypted = Buffer.concat([
     cipher.update(jsonPayload, 'utf8'),
     cipher.final()
   ]);
+
   return encrypted.toString('hex');
 }
 
@@ -24,7 +29,7 @@ async function sendPayoutRequest(encryptedHex) {
     },
     body: JSON.stringify({ body: encryptedHex })
   });
-
+console.log("resp",resp)
   if (!resp.ok) {
     const text = await resp.text();
     throw new Error(`HTTP ${resp.status}: ${text}`);
@@ -38,17 +43,23 @@ async function unPayPayout(providerKey, params) {
     throw new Error(`No provider configured for ${providerKey}`);
   }
 
-  const json = JSON.stringify({
-    partner_id: '2033',
+  const payload = JSON.stringify({
+    partner_id: '2',
     latitude: '22.5754',
     longitude: '88.4798',
     webhook: process.env.UNPAY_WEBHOOK,
     ...params
   });
-  const encryptedHex = aesEncrypt(json, process.env.UNPAY_AES_KEY);
-  const resp = await sendPayoutRequest(encryptedHex);
 
+  const encryptedHex = aesEncrypt(
+    payload,
+    process.env.UNPAY_AES_KEY,
+    process.env.UNPAY_AES_IV
+  );
+
+  const resp = await sendPayoutRequest(encryptedHex);
   const { statuscode, txnid, refno, message } = resp || {};
+  console.log("statuscode",statuscode)
   return {
     subCode: statuscode === 'TXN' ? '200' : statuscode === 'ERR' ? '400' : '200',
     txn_status: statuscode === 'TXN' ? 'SUCCESS'
