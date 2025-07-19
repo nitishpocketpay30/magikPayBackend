@@ -71,7 +71,7 @@ const Transaction = sequelize.define('Transaction', {
     allowNull: false,
     defaultValue: 0, // 0=PENDING, 1=SUCCESS, 2=FAIL
     validate: {
-      isIn: [[0, 1, 2]]
+      isIn: [[0, 1, 2, 3]]
     }
   },
   apiName: {

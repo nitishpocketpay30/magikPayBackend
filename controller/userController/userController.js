@@ -14,7 +14,7 @@ const { validationResult } = require('express-validator');
 // 🛠️ Internal Services & Utilities
 const sendCredentialEmail = require('../../service/sendCredential');
 const {sendOTPMPIN, sendOTPTXNPIN} = require('../../service/sendMail');
-const { generateRefreshToken, generateAccessToken } = require('../../service/token');
+const { generateRefreshToken, generateAccessToken, generateAccessTokenKey, generateAccessKeyWithRetries } = require('../../service/token');
 const generatePassword = require('../../service/passwordGenerator');
 
 // 👥 Models
@@ -72,6 +72,7 @@ const addUser = async (req, res, next) => {
       throw createError(400, 'Missing required fields');
     }
     const raw = generatePassword(12);
+    const accessKey=generateAccessKeyWithRetries();
     const hashed = await bcrypt.hash(raw, 12);
     const userData = {
       companyName,
@@ -82,7 +83,8 @@ const addUser = async (req, res, next) => {
       panHolderName: panHolderName || null,
       contactPersonName: contactPersonName || null,
       contactPersonMobile: contactPersonMobile || null,
-      password: hashed
+      password: hashed,
+      access_token:accessKey
     };
 
     const files = req.files || {};

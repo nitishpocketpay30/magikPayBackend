@@ -24,7 +24,7 @@ const app = express();
 const server = http.createServer(app);
 
 const PORT = process.env.PORT || 5001;
-
+app.set('trust proxy', true);
 // Connect to MongoDB
 mongodbConnection();
 

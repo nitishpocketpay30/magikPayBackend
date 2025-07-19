@@ -64,4 +64,20 @@ function generateVirtualId(length = 8) {
 function generateApiTxnId() {
   return crypto.randomUUID(); // e.g. "9b9c8a30-5d0f-4f11-9c2a-4d3e92b3f7f2"
 }
-module.exports = { generateAccessToken, generateRefreshToken,encryptDataFromText,decryptTextFromData,generateVirtualId,generateApiTxnId };
+function generateAccessTokenKey() {
+  return crypto.randomBytes(16).toString('hex'); // 16 bytes = 32 hex chars
+}
+function generateAccessKeyWithRetries(maxRetries = 3) {
+  let attempt = 0;
+  let accessKey = null;
+
+  while (attempt < maxRetries) {
+    accessKey = generateAccessTokenKey();
+    if (accessKey) return accessKey;
+    attempt++;
+  }
+
+  // If all attempts fail
+  throw createError(400, 'Failed to create access key after 3 attempts');
+}
+module.exports = { generateAccessToken, generateRefreshToken,encryptDataFromText,decryptTextFromData,generateVirtualId,generateApiTxnId,generateAccessTokenKey,generateAccessKeyWithRetries };
